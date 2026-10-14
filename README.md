@@ -4,7 +4,7 @@
 
 ## 中文
 
-ABS Skill 让 Claude Code、Codex、WorkBuddy、OpenClaw 等 AI Agent 直接调用 ABS（AI 企业经营系统）：
+ABS Skill 让 Claude Code、Codex、WorkBuddy、OpenClaw 等 AI Agent 直接调用 ABS（AI 企业精益经营系统）：
 
 - 查精益与经营方法：5S、标准作业、节拍与配员、快速换模、改善周、问题解决、日常管理与安灯、战略部署、价值流、TPM 与 OEE、拉动与看板、客户之声、价值销售、人才发展、并购整合等；
 - 带出处回答，能取原文页核对；

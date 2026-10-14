@@ -1,5 +1,7 @@
 ---
 name: abs-business-system
+display_name: "ABS · AI 企业精益经营系统"
+display_name_en: "ABS · AI Business System"
 description: >-
   Use ABS (AI Business System) to answer and act on lean / operational-excellence work with a curated knowledge
   base built on in-depth study of DBS (the Danaher Business System). Trigger when the user asks about DBS or how
@@ -12,7 +14,7 @@ description: >-
   中文：问 DBS（丹纳赫业务系统）、精益与经营体系的方法和工具（5S、标准作业、快速换型、改善周、问题解决、日常管理、方针展开、价值流、TPM、拉动看板等），
   或要查 ABS、问 ABS、学 ABS 课程、做规划、做业务诊断时使用。Needs an ABS access token.
 description_zh: >-
-  用 ABS（AI 企业经营系统）的知识库与工具处理精益与经营管理的事，知识库建立在对丹纳赫业务系统（DBS）的深入研究之上：查方法和工具（5S、标准作业、节拍与配员、快速换型、改善周、
+  用 ABS（AI 企业精益经营系统）的知识库与工具处理精益与经营管理的事，知识库建立在对丹纳赫业务系统（DBS）的深入研究之上：查方法和工具（5S、标准作业、节拍与配员、快速换型、改善周、
   问题解决与根因、日常管理与安灯、方针展开与保龄球图、价值流、TPM 与 OEE、拉动与看板、客户之声、销售队伍、人才发展、并购整合），
   带出处回答问题，学习 ABS 课程，一句话做出带时间规划的规划书，对生产数据、文档或现场照片做业务诊断。需要 ABS 访问令牌。
 description_en: >-
@@ -22,7 +24,7 @@ description_en: >-
   integration), answer questions with sources, study ABS courses, turn one sentence into a scheduled execution plan,
   and diagnose operations data, documents or shop-floor photos. The knowledge base is built on in-depth study of
   the Danaher Business System (DBS). Requires an ABS access token.
-version: 1.1.4
+version: 1.1.5
 author: ABS · AI Business System
 ---
 
