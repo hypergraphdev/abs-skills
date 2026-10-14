@@ -1,0 +1,10 @@
+{
+  "name": "abs-business-system",
+  "version": "1.1.3",
+  "description": "Use ABS (AI Business System) from your agent: lean and operational-excellence methods with sources, courses, scheduled plans and operations diagnosis. Requires an ABS access token.",
+  "author": { "name": "ABS · AI Business System", "url": "https://www.ucai.net" },
+  "homepage": "https://www.ucai.net",
+  "repository": "https://github.com/hypergraphdev/abs-skills",
+  "license": "MIT-0",
+  "keywords": ["lean", "dbs", "operational-excellence", "kaizen", "manufacturing"]
+}

@@ -1,0 +1,12 @@
+{
+  "name": "abs-skills",
+  "description": "ABS · AI Business System skills: lean and operational-excellence methods with sources, plans and diagnosis",
+  "owner": { "name": "ABS · AI Business System", "url": "https://www.ucai.net" },
+  "plugins": [
+    {
+      "name": "abs-business-system",
+      "source": "./",
+      "description": "Use ABS from your agent: look up lean methods with sources, study courses, make scheduled plans and diagnose operations data"
+    }
+  ]
+}
