@@ -42,6 +42,8 @@ ABS Skill 让 Claude Code、Codex、WorkBuddy、OpenClaw 等 AI Agent 直接调�
 - 令牌等同于你本人：权限、可见范围、到期时间都跟着你的账号，只在 ABS 的 Agent 接口上有效，随时可以撤销。
 - `diagnose` 会把你给的问题和文件发给 ABS 及其 AI 模型，涉及机密前请先确认。
 
+完整的[隐私政策（Privacy Policy）](https://www.ucai.net/privacy.html)。
+
 ABS 为独立产品，与丹纳赫无隶属、赞助或背书关系。
 
 ## English
@@ -95,6 +97,8 @@ Personal Settings → Access tokens, and give it to your agent. No account yet? 
 - The token acts as you: same permissions, visibility and expiry as your account. It only works on the ABS agent
   API and can be revoked at any time.
 - `diagnose` sends your question and file to ABS and its AI model. Check before sending anything confidential.
+
+Read the full [Privacy Policy](https://www.ucai.net/privacy.html#en).
 
 ABS is an independent product, not affiliated with, sponsored or endorsed by Danaher.
 
