@@ -22,7 +22,7 @@ description_en: >-
   integration), answer questions with sources, study ABS courses, turn one sentence into a scheduled execution plan,
   and diagnose operations data, documents or shop-floor photos. The knowledge base is built on in-depth study of
   the Danaher Business System (DBS). Requires an ABS access token.
-version: 1.1.3
+version: 1.1.4
 author: ABS · AI Business System
 ---
 
@@ -55,15 +55,15 @@ pass `--base-url https://…` to `login`.
 | The user wants to… | Command |
 |---|---|
 | Know how a method or tool works, what the rules or formulas are, where to start | `search`, then `card <id>` for the full tool card |
-
-`search` returns a short snippet around the match — enough to choose what to open, not the full text. Open the
-card (or the source page) for the real content. The first 100 searches a day are free; beyond that each one costs
-1 credit, so search with intent instead of sweeping the library.
 | Check where a number or rule comes from | `card <id>` (sources, rule basis, pages), then `page <pdf> <n>` for the original page |
 | Get an answer grounded in ABS materials, with sources | `ask "<question>"` |
 | Study: which course fits, what a lesson covers, practise a lesson | `courses`, `course <id>` |
 | Plan something: a kaizen week, a training program, a transformation, hiring a key role … | `plan "<what they want to achieve>"` |
 | Assess a situation: production records, a report, a shop-floor photo, a described problem | `diagnose "<question>" [--file PATH]` |
+
+`search` returns a short snippet around the match — enough to choose what to open, not the full text. Open the
+card (or the source page) for the real content. The first 100 searches a day are free; beyond that each one costs
+1 credit, so search with intent instead of sweeping the library.
 
 Do **not** use it for unrelated tasks (general coding, travel, chit-chat) or when the user asks for your own
 opinion without ABS. More examples: `references/tasks.md`.
