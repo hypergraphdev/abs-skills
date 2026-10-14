@@ -21,6 +21,7 @@ ABS Skill 让 Claude Code、Codex、WorkBuddy、OpenClaw 等 AI Agent 直接调�
 | 支持 Agent Skills 的大多数 Agent | `npx skills add hypergraphdev/abs-skills` |
 | Claude Code | `/plugin marketplace add hypergraphdev/abs-skills`，再 `/plugin install abs-business-system@abs-skills` |
 | OpenClaw | `openclaw skills install @hypergraphdev/abs-business-system` |
+| Gemini CLI | `gemini extensions install https://github.com/hypergraphdev/abs-skills` |
 | 手动 | 下载 <https://www.ucai.net/api/agent/skill.zip>，解压到 Agent 的技能目录 |
 
 ### 第一次使用
@@ -68,6 +69,7 @@ built on in-depth study of the Danaher Business System (DBS), not from the model
 | Most agents that support Agent Skills | `npx skills add hypergraphdev/abs-skills` |
 | Claude Code | `/plugin marketplace add hypergraphdev/abs-skills`, then `/plugin install abs-business-system@abs-skills` |
 | OpenClaw | `openclaw skills install @hypergraphdev/abs-business-system` |
+| Gemini CLI | `gemini extensions install https://github.com/hypergraphdev/abs-skills` |
 | Manual | download <https://www.ucai.net/api/agent/skill.zip> and unzip it into your agent's skills folder |
 
 ### First use
