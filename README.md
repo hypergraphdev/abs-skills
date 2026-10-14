@@ -24,6 +24,14 @@ ABS Skill 让 Claude Code、Codex、WorkBuddy、OpenClaw 等 AI Agent 直接调�
 | Gemini CLI | `gemini extensions install https://github.com/hypergraphdev/abs-skills` |
 | 手动 | 下载 <https://www.ucai.net/api/agent/skill.zip>，解压到 Agent 的技能目录 |
 
+### 不装技能，直接用 MCP 连
+
+支持 MCP 的应用可以不装技能，直接连 `https://www.ucai.net/api/agent/mcp`，能做的事一样（11 个工具）：
+
+- **claude.ai、ChatGPT 等**：在「连接器」里添加这个地址，按提示登录 ABS、点「同意」，不用复制令牌；连过的应用在「个人设置 → 已连接的应用」里随时可以断开。
+- **Claude Code**：`claude mcp add --transport http abs https://www.ucai.net/api/agent/mcp`，再输入 `/mcp` 登录授权。
+- **Cursor 等用配置文件的应用**：在 MCP 配置里写上这个地址，加请求头 `Authorization: Bearer <你的访问令牌>`。
+
 ### 第一次使用
 
 需要一个 ABS 账号和访问令牌：登录 <https://www.ucai.net>，在「个人设置 → 访问令牌」里生成一个，交给你的 Agent。
@@ -71,6 +79,17 @@ built on in-depth study of the Danaher Business System (DBS), not from the model
 | OpenClaw | `openclaw skills install @hypergraphdev/abs-business-system` |
 | Gemini CLI | `gemini extensions install https://github.com/hypergraphdev/abs-skills` |
 | Manual | download <https://www.ucai.net/api/agent/skill.zip> and unzip it into your agent's skills folder |
+
+### Connect over MCP instead
+
+Apps that support MCP can skip the skill and connect to `https://www.ucai.net/api/agent/mcp` directly, with the
+same 11 tools:
+
+- **claude.ai, ChatGPT and similar:** add the URL as a connector, sign in to ABS and click Allow — no token to copy.
+  Disconnect any time under Personal Settings → Connected apps.
+- **Claude Code:** `claude mcp add --transport http abs https://www.ucai.net/api/agent/mcp`, then run `/mcp` to sign in.
+- **Cursor and other apps configured by file:** add the URL to the MCP config with the header
+  `Authorization: Bearer <your access token>`.
 
 ### First use
 
