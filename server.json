@@ -1,0 +1,25 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "net.ucai/abs",
+  "title": "ABS · AI Business System",
+  "description": "Lean operations knowledge base built on DBS: cited answers, tool cards, plans and diagnoses.",
+  "version": "1.0.0",
+  "websiteUrl": "https://www.ucai.net/agent-skill",
+  "repository": {
+    "url": "https://github.com/hypergraphdev/abs-skills",
+    "source": "github"
+  },
+  "icons": [
+    {
+      "src": "https://www.ucai.net/favicon.svg",
+      "mimeType": "image/svg+xml",
+      "sizes": ["any"]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://www.ucai.net/api/agent/mcp"
+    }
+  ]
+}

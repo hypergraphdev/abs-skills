@@ -12,19 +12,19 @@ description: >-
   sources from ABS, study an ABS course, make an execution plan with a schedule (e.g. "plan a kaizen week",
   "arrange lean training for middle managers"), or diagnose operations data, a document or a shop-floor photo.
   中文：问 DBS（丹纳赫业务系统）、精益与经营体系的方法和工具（5S、标准作业、快速换型、改善周、问题解决、日常管理、方针展开、价值流、TPM、拉动看板等），
-  或要查 ABS、问 ABS、学 ABS 课程、做规划、做业务诊断时使用。Needs an ABS access token.
+  或要查 ABS、问 ABS、学 ABS 课程、做规划、做业务诊断时使用。Search works without an account; the rest needs an ABS access token.
 description_zh: >-
   用 ABS（AI 企业精益经营系统）的知识库与工具处理精益与经营管理的事，知识库建立在对丹纳赫业务系统（DBS）的深入研究之上：查方法和工具（5S、标准作业、节拍与配员、快速换型、改善周、
   问题解决与根因、日常管理与安灯、方针展开与保龄球图、价值流、TPM 与 OEE、拉动与看板、客户之声、销售队伍、人才发展、并购整合），
-  带出处回答问题，学习 ABS 课程，一句话做出带时间规划的规划书，对生产数据、文档或现场照片做业务诊断。需要 ABS 访问令牌。
+  带出处回答问题，学习 ABS 课程，一句话做出带时间规划的规划书，对生产数据、文档或现场照片做业务诊断。检索不用登录；看整张工具卡、问答、学课程、规划与诊断需要 ABS 访问令牌。
 description_en: >-
   Use ABS (AI Business System) for lean and operational-excellence work: look up methods and tools (5S, standard
   work, takt and staffing, SMED, kaizen events, problem solving and root cause, daily management and andon, policy
   deployment and bowlers, value streams, TPM and OEE, pull and kanban, VOC, sales force, talent development, M&A
   integration), answer questions with sources, study ABS courses, turn one sentence into a scheduled execution plan,
   and diagnose operations data, documents or shop-floor photos. The knowledge base is built on in-depth study of
-  the Danaher Business System (DBS). Requires an ABS access token.
-version: 1.1.5
+  the Danaher Business System (DBS). Search works without an account; the rest requires an ABS access token.
+version: 1.2.0
 author: ABS · AI Business System
 ---
 
@@ -40,14 +40,22 @@ ABS 为独立产品，与丹纳赫无隶属、赞助或背书关系。
 All commands run the bundled script: `python3 scripts/abs.py <command> …` (path relative to this skill's folder;
 Python 3.8+, no packages needed). Add `--json` to any command for the raw response.
 
-## First use: connect with the user's access token
+## First use
 
-1. Run `python3 scripts/abs.py whoami`.
-2. If it says there is no token (or the token was rejected), ask the user:
+**`search` works right away, with no account or token** — run it first for any question in scope and answer
+from what it returns. The other commands (`card`, `ask`, `courses`, `course`, `plan`, `diagnose`, `page`) need
+the user's ABS access token:
+
+1. Run `python3 scripts/abs.py whoami` to see whether a token is connected.
+2. If there is none (or it was rejected) and the user needs more than search, ask them:
    “Please create an access token in ABS → **Personal Settings → Access tokens**, copy it, and paste it here.”
    中文：「请在 ABS 的**个人设置 → 访问令牌**里生成一个令牌，复制后发给我。」
 3. Run `python3 scripts/abs.py login <token>`. It checks the token and saves it in the user's config file
    (readable only by the user). **Never repeat the token back in the conversation.**
+
+Without a token, still help: search (several phrasings if the first finds little), then answer from the titles,
+excerpts, basis labels and links it returned. Say that the excerpts are short and that the whole tool card,
+cited answers, plans and diagnoses need a token — do not stop at asking for one.
 
 The site address is already set to the ABS site this skill was downloaded from. Only for a private deployment
 pass `--base-url https://…` to `login`.
@@ -64,8 +72,9 @@ pass `--base-url https://…` to `login`.
 | Assess a situation: production records, a report, a shop-floor photo, a described problem | `diagnose "<question>" [--file PATH]` |
 
 `search` returns a short snippet around the match — enough to choose what to open, not the full text. Open the
-card (or the source page) for the real content. The first 100 searches a day are free; beyond that each one costs
-1 credit, so search with intent instead of sweeping the library.
+card (or the source page) for the real content. With a token, the first 100 searches a day are free and each one
+after that costs 1 credit; without a token, searches are capped per network address per day. Either way, search
+with intent instead of sweeping the library.
 
 Do **not** use it for unrelated tasks (general coding, travel, chit-chat) or when the user asks for your own
 opinion without ABS. More examples: `references/tasks.md`.
@@ -113,7 +122,8 @@ Language follows the text you pass (Chinese in → Chinese out; English in → E
   there — submitting is what creates projects and tasks. Show the key parts rather than pasting everything.
 - `diagnose` sends the question and the file to ABS and its AI model. Ask before sending anything confidential.
   Add `--save` to keep it in the user's diagnosis records.
-- Errors: `401` → the token is invalid, revoked or expired: ask the user for a new one and `login` again.
+- Errors: `401` → the token is invalid, revoked or expired: ask the user for a new one and `login` again
+  (search also works with no token at all).
   `403` → the account's role cannot do this (read-only accounts cannot plan). `429` → too many calls; wait and retry.
   `402` → the account is out of ABS credits for this step: tell the user, do not retry in a loop.
   `503` → the ABS AI model is temporarily unavailable; `search`, `card` and `courses` still work.

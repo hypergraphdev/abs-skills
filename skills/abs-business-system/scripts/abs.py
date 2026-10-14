@@ -25,11 +25,16 @@ from pathlib import Path
 from typing import Any
 
 SKILL = "abs-business-system"
-VERSION = "1.2.0"
+VERSION = "1.3.0"
 TOKEN_PREFIX = "abs_pat_"
 SKILL_DIR = Path(__file__).resolve().parent.parent
 CJK = re.compile(r"[㐀-鿿]")
 TIMEOUT_FAST, TIMEOUT_SLOW = 60, 180  # plans and diagnoses run AI models on the server
+NO_TOKEN = (
+    "`search` works without a token. To read whole tool cards, ask ABS, see courses, plan or diagnose, "
+    "ask the user to create an access token in ABS → Personal Settings → Access tokens "
+    "(个人设置 → 访问令牌), then run `login <token>`."
+)
 
 
 class AbsError(Exception):
@@ -109,9 +114,18 @@ def call(
     params: dict[str, Any] | None = None,
     body: dict[str, Any] | None = None,
     timeout: int = TIMEOUT_FAST,
+    guest: bool = False,
 ) -> dict[str, Any]:
     raw = fetch(
-        base, token, method, path, params=params, body=body, timeout=timeout, accept="application/json"
+        base,
+        token,
+        method,
+        path,
+        params=params,
+        body=body,
+        timeout=timeout,
+        accept="application/json",
+        guest=guest,
     )
     return json.loads(raw.decode("utf-8") or "{}")
 
@@ -126,21 +140,20 @@ def fetch(
     body: dict[str, Any] | None = None,
     timeout: int = TIMEOUT_FAST,
     accept: str = "*/*",
+    guest: bool = False,
 ) -> bytes:
+    """guest=True: without a token the call goes out anonymously (only `search` allows that)."""
     if not base:
         raise AbsError("No ABS site address. Run `login <token> --base-url https://…`.", 1)
-    if not token:
-        raise AbsError(
-            "No ABS access token yet. Ask the user to create one in ABS → Personal Settings → Access tokens "
-            "(个人设置 → 访问令牌), then run `login <token>`.",
-            2,
-        )
+    if not token and not guest:
+        raise AbsError(NO_TOKEN, 2)
     url = f"{base}/api/agent/v1{path}"
     if params:
         url += "?" + urllib.parse.urlencode({k: v for k, v in params.items() if v is not None})
     data = json.dumps(body, ensure_ascii=False).encode("utf-8") if body is not None else None
     request = urllib.request.Request(url, data=data, method=method)
-    request.add_header("Authorization", f"Bearer {token}")
+    if token:
+        request.add_header("Authorization", f"Bearer {token}")
     request.add_header("Accept", accept)
     request.add_header("User-Agent", f"abs-skill/{VERSION}")
     if data is not None:
@@ -168,7 +181,8 @@ def explain(exc: urllib.error.HTTPError) -> str:
         403: "This ABS account is not allowed to do that (read-only accounts cannot create plans).",
         404: "Not found in ABS (or not visible to this account).",
         413: "The file is too large for ABS.",
-        429: "Too many calls in a short time. Wait a minute and retry.",
+        429: "Too many calls in a short time. Wait a minute and retry. Without a token, searches are also "
+        "capped per day: connect an access token to search under the user's own account.",
         503: "The ABS AI model is temporarily unavailable. search, card and courses still work.",
     }
     parts = [f"HTTP {exc.code}", hints.get(exc.code, ""), f"ABS says: {detail}" if detail else ""]
@@ -239,6 +253,14 @@ def cmd_logout(args: argparse.Namespace) -> None:
 
 def cmd_whoami(args: argparse.Namespace) -> None:
     base, token = resolve(args)
+    if not token:
+        # 没有令牌不算出错：检索照样能用，告诉 Agent 能做什么、还差什么
+        show(
+            {"site": base, "signed_in": False, "can": {"search": True}},
+            args,
+            f"ABS site: {base}\nNot connected to an ABS account yet (no access token).\n{NO_TOKEN}",
+        )
+        return
     me = call(base, token, "GET", "/me")
     user, info, can = me.get("user") or {}, me.get("token") or {}, me.get("can") or {}
     allowed = ", ".join(k for k, v in can.items() if v)
@@ -255,7 +277,9 @@ def cmd_whoami(args: argparse.Namespace) -> None:
 def cmd_search(args: argparse.Namespace) -> None:
     base, token = resolve(args)
     lang = pick_lang(args.lang, args.query)
-    out = call(base, token, "GET", "/search", params={"q": args.query, "limit": args.limit, "lang": lang})
+    out = call(
+        base, token, "GET", "/search", params={"q": args.query, "limit": args.limit, "lang": lang}, guest=True
+    )
     rows = out.get("results") or []
     if not rows:
         text = (
@@ -268,6 +292,8 @@ def cmd_search(args: argparse.Namespace) -> None:
             f"{i}. [{r.get('kind')}] {r.get('title')}{tags(r)} — {r.get('url')}\n   {r.get('excerpt')}"
             for i, r in enumerate(rows, 1)
         )
+    if out.get("note"):
+        text += f"\n\n{out['note']}"
     show(out, args, text)
 
 
