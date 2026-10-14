@@ -28,6 +28,15 @@ ABS Skill 让 Claude Code、Codex、WorkBuddy、OpenClaw 等 AI Agent 直接调�
 需要一个 ABS 账号和访问令牌：登录 <https://www.ucai.net>，在「个人设置 → 访问令牌」里生成一个，交给你的 Agent。
 没有账号可以在 <https://www.ucai.net/trial> 申请试用。
 
+### 它运行什么、发送什么、保存什么
+
+- **运行**：Agent 决定使用这个技能时，运行 `scripts/abs.py`（只用 Python 标准库，不安装任何包）。
+- **联网**：只通过 HTTPS 访问 `https://www.ucai.net/api/agent/v1/`（或你用 `--base-url`、`ABS_BASE_URL` 指定的 ABS 站点），不访问别的地址。
+- **发送的内容**：你的访问令牌（放在请求头里）、检索词、问题、规划需求；只有 `diagnose` 会发送你指定的那个文件。
+- **本机保存**：令牌和站点地址存在 `~/.config/abs-business-system/config.json`（Windows 在 `%APPDATA%`），文件权限只有你本人可读；`logout` 会删掉令牌。`page` 把取回的原文页存成当前目录下的 PNG。
+- **读取的环境变量**：`ABS_TOKEN`、`ABS_BASE_URL`，设置了才读，作为 `login` 之外的另一种配置方式。
+- **ABS 服务端**：用 ABS 的知识库作答，并调用第三方大模型服务生成文字；发给模型之前，会把你在 ABS 里登记过的对象名、产线名、人名换成代号。规划会存成你 ABS 账号里的草稿；诊断只在加 `--save` 时保存。
+
 ### 隐私
 
 - 令牌等同于你本人：权限、可见范围、到期时间都跟着你的账号，只在 ABS 的 Agent 接口上有效，随时可以撤销。
@@ -64,6 +73,22 @@ built on in-depth study of the Danaher Business System (DBS), not from the model
 You need an ABS account and an access token: sign in at <https://www.ucai.net>, create one under
 Personal Settings → Access tokens, and give it to your agent. No account yet? Request a trial at
 <https://www.ucai.net/trial>.
+
+### What it runs, sends and stores
+
+- **Runs:** `scripts/abs.py` when your agent decides to use the skill. It uses the Python standard library only and
+  installs nothing.
+- **Network:** HTTPS to `https://www.ucai.net/api/agent/v1/` only (or the ABS site you set with `--base-url` or
+  `ABS_BASE_URL`). No other destination.
+- **Sends:** your access token (in the request header), search terms, questions and plan requests; only `diagnose`
+  sends a file, and only the file you name.
+- **Stores on your machine:** the token and site address in `~/.config/abs-business-system/config.json`
+  (`%APPDATA%` on Windows), readable only by you; `logout` removes the token. `page` saves the fetched page as a PNG
+  in the current folder.
+- **Environment variables read:** `ABS_TOKEN` and `ABS_BASE_URL`, only if you set them, as an alternative to `login`.
+- **ABS server side:** answers come from the ABS knowledge base, with a third-party large-language-model service
+  writing the text. Before anything is sent to the model, ABS replaces the object, line and people names registered in your
+  ABS account with placeholders. Plans are saved as drafts in your ABS account; diagnoses are saved only with `--save`.
 
 ### Privacy
 
