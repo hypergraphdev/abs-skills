@@ -24,7 +24,7 @@ description_en: >-
   integration), answer questions with sources, study ABS courses, turn one sentence into a scheduled execution plan,
   and diagnose operations data, documents or shop-floor photos. The knowledge base is built on in-depth study of
   the Danaher Business System (DBS). Search works without an account; the rest requires an ABS access token.
-version: 1.2.0
+version: 1.2.1
 author: ABS · AI Business System
 ---
 
