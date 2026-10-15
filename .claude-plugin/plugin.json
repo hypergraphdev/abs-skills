@@ -1,7 +1,7 @@
 {
   "name": "abs-business-system",
   "version": "1.2.0",
-  "description": "Use ABS (AI Business System) from your agent: lean and operational-excellence methods with sources, courses, scheduled plans and operations diagnosis. Requires an ABS access token.",
+  "description": "Use ABS (AI Business System) from your agent: lean and operational-excellence methods with sources, courses, scheduled plans and operations diagnosis. Search works without an account; the rest requires an ABS access token.",
   "author": {
     "name": "ABS · AI Business System",
     "url": "https://www.ucai.net"
