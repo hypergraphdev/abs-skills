@@ -24,7 +24,7 @@ description_en: >-
   integration), answer questions with sources, study ABS courses, turn one sentence into a scheduled execution plan,
   and diagnose operations data, documents or shop-floor photos. The knowledge base is built on in-depth study of
   the Danaher Business System (DBS). Search works without an account; the rest requires an ABS access token.
-version: 1.2.1
+version: 1.2.2
 author: ABS · AI Business System
 ---
 
@@ -85,7 +85,7 @@ opinion without ABS. More examples: `references/tasks.md`.
 python3 scripts/abs.py whoami
 python3 scripts/abs.py search "SMED 换型时间怎么压" --limit 8
 python3 scripts/abs.py card smed
-python3 scripts/abs.py page DBS教材34_DBS系统导入.pdf 102
+python3 scripts/abs.py page "<pdf name from the card's pages list>" 102
 python3 scripts/abs.py ask "How do I set the takt time for a new cell?"
 python3 scripts/abs.py courses
 python3 scripts/abs.py course tutorial-22-smed

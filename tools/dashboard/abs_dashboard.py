@@ -46,6 +46,7 @@ EXPECTED_MCP_TOOLS = 11  # README：MCP 和技能能做的事一样，11 个工�
 
 def load_abs_script():
     """复用 abs.py 的配置路径与站点地址，不另写一份。"""
+    sys.dont_write_bytecode = True  # 别在技能目录里留下 __pycache__
     spec = importlib.util.spec_from_file_location("abs_cli", SKILL_DIR / "scripts" / "abs.py")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
