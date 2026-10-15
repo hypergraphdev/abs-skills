@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ABS Skill 统计</title>
+<!--DATA-->
+<style>
+  :root {
+    color-scheme: light;
+    --surface-0: #f6f5f2;
+    --surface-1: #fcfcfb;
+    --border: #e4e2dc;
+    --grid: #ebe9e4;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted: #77756f;
+    --accent: #2a78d6;
+    --accent-soft: #e8f1fc;
+    --series-1: #2a78d6;
+    --good: #0ca30c;
+    --warning: #fab219;
+    --serious: #ec835a;
+    --critical: #d03b3b;
+    --muted-mark: #a9a7a0;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .04);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --surface-0: #121211;
+      --surface-1: #1a1a19;
+      --border: #2e2e2b;
+      --grid: #2a2a27;
+      --text-primary: #f0efec;
+      --text-secondary: #c3c2b7;
+      --text-muted: #8f8e86;
+      --accent: #3987e5;
+      --accent-soft: #1d2a3a;
+      --series-1: #3987e5;
+      --muted-mark: #5f5e58;
+      --shadow: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface-0: #121211;
+    --surface-1: #1a1a19;
+    --border: #2e2e2b;
+    --grid: #2a2a27;
+    --text-primary: #f0efec;
+    --text-secondary: #c3c2b7;
+    --text-muted: #8f8e86;
+    --accent: #3987e5;
+    --accent-soft: #1d2a3a;
+    --series-1: #3987e5;
+    --muted-mark: #5f5e58;
+    --shadow: none;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--surface-0);
+    color: var(--text-primary);
+    font: 14px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB",
+      "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code { font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 24px 16px 64px; }
+
+  header { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: flex-end; justify-content: space-between; }
+  h1 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -.01em; }
+  .meta { color: var(--text-secondary); font-size: 13px; margin-top: 4px; }
+  .actions { display: flex; gap: 8px; align-items: center; }
+  button {
+    font: inherit; font-size: 13px; color: var(--text-primary); background: var(--surface-1);
+    border: 1px solid var(--border); border-radius: 8px; padding: 6px 14px; cursor: pointer;
+  }
+  button:hover:not(:disabled) { border-color: var(--accent); }
+  button:disabled { opacity: .55; cursor: progress; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .summary { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 8px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px;
+    background: var(--surface-1); border: 1px solid var(--border); font-size: 13px; color: var(--text-secondary);
+  }
+  .chip b { color: var(--text-primary); font-weight: 600; }
+
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0 8px; }
+  .tile {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px;
+    box-shadow: var(--shadow);
+  }
+  .tile .label { color: var(--text-secondary); font-size: 13px; }
+  .tile .value { font-size: 28px; font-weight: 600; line-height: 1.25; margin-top: 4px; }
+  .tile .sub { color: var(--text-muted); font-size: 12px; margin-top: 2px; }
+
+  section { margin-top: 32px; }
+  h2 { font-size: 16px; font-weight: 600; margin: 0 0 12px; display: flex; align-items: baseline; gap: 10px; }
+  h2 .n { color: var(--text-muted); font-weight: 500; }
+  h2 .aside { margin-left: auto; font-size: 12px; font-weight: 400; color: var(--text-muted); }
+  .card {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .card + .card { margin-top: 12px; }
+  .card-head { padding: 12px 16px; border-bottom: 1px solid var(--border); font-weight: 600; font-size: 13px; }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px; }
+  .grid2 > .card + .card { margin-top: 0; }
+
+  .table-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 10px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { font-size: 12px; font-weight: 500; color: var(--text-muted); background: var(--surface-1); }
+  tr:last-child td { border-bottom: 0; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .muted { color: var(--text-muted); }
+  .secondary { color: var(--text-secondary); }
+  .small { font-size: 12px; }
+  .nowrap { white-space: nowrap; }
+
+  .status { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; font-size: 13px; }
+  .status .dot {
+    width: 18px; height: 18px; border-radius: 50%; display: inline-grid; place-items: center;
+    font-size: 11px; font-weight: 700; color: #fff; flex: none;
+  }
+  .s-ok .dot { background: var(--good); }
+  .s-warn .dot { background: var(--warning); color: #3a2a00; }
+  .s-fail .dot { background: var(--critical); }
+  .s-skip .dot { background: var(--muted-mark); }
+  .s-info .dot { background: var(--accent); }
+
+  .rows { list-style: none; margin: 0; padding: 0; }
+  .rows li { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; padding: 10px 16px; border-bottom: 1px solid var(--border); }
+  .rows li:last-child { border-bottom: 0; }
+  .rows .title { font-weight: 500; }
+  .rows .text { grid-column: 1 / -1; color: var(--text-secondary); font-size: 13px; }
+  .rows .detail { grid-column: 1 / -1; color: var(--text-muted); font-size: 12px; white-space: pre-wrap; word-break: break-all; }
+  .kv { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; padding: 12px 16px; font-size: 13px; }
+  .kv dt { color: var(--text-muted); }
+  .kv dd { margin: 0; word-break: break-all; }
+
+  .chart-card { padding: 14px 16px 12px; }
+  .chart-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .chart-title { font-weight: 600; font-size: 13px; }
+  .chart-total { color: var(--text-secondary); font-size: 13px; }
+  .chart-head button { margin-left: auto; padding: 2px 10px; font-size: 12px; }
+  .chart { position: relative; margin-top: 8px; }
+  .chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .chart .gridline { stroke: var(--grid); stroke-width: 1; }
+  .chart .axis-text { fill: var(--text-muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .chart .bar { fill: var(--series-1); }
+  .chart .bar.dim { opacity: .35; }
+  .chart .line { fill: none; stroke: var(--series-1); stroke-width: 2; }
+  .chart .pt { fill: var(--series-1); stroke: var(--surface-1); stroke-width: 2; }
+  .chart .hit { fill: transparent; cursor: default; }
+  .tip {
+    position: absolute; pointer-events: none; background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 8px; padding: 6px 10px; font-size: 12px; box-shadow: 0 4px 16px rgba(0, 0, 0, .12);
+    white-space: nowrap; transform: translate(-50%, calc(-100% - 8px)); display: none; z-index: 2;
+  }
+  .tip b { font-weight: 600; }
+  .empty { padding: 24px 16px; color: var(--text-muted); font-size: 13px; text-align: center; }
+  .note { color: var(--text-muted); font-size: 12px; margin-top: 8px; }
+  .loading { padding: 64px 0; text-align: center; color: var(--text-secondary); }
+  .error { padding: 16px; border: 1px solid var(--critical); border-radius: 12px; background: var(--surface-1); }
+  @media (max-width: 560px) {
+    th, td { padding: 8px 10px; }
+    .hide-sm { display: none; }
+    table.wide { min-width: 560px; }
+    .tile .value { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>ABS Skill 统计</h1>
+      <div class="meta" id="meta">正在检查…</div>
+    </div>
+    <div class="actions">
+      <button class="primary" id="refresh" type="button">刷新</button>
+    </div>
+  </header>
+  <div id="app"><div class="loading">正在检查代码、各平台和 MCP，10 到 30 秒…</div></div>
+</div>
+
+<script>
+(() => {
+  const STATUS = {
+    ok: ['✓', '正常'], warn: ['!', '注意'], fail: ['✕', '失败'], skip: ['–', '跳过'], info: ['i', '信息'],
+  };
+  const app = document.getElementById('app');
+  const meta = document.getElementById('meta');
+  const btn = document.getElementById('refresh');
+  const fmt = new Intl.NumberFormat('zh-CN');
+
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  }[c]));
+  const num = (v) => (v === null || v === undefined ? '—' : fmt.format(v));
+  const when = (iso) => {
+    if (!iso) return '—';
+    const d = new Date(iso);
+    return isNaN(d) ? esc(iso) : d.toLocaleString('zh-CN', { hour12: false });
+  };
+  const pill = (s) => {
+    const [icon, label] = STATUS[s] || STATUS.info;
+    return `<span class="status s-${esc(s)}"><span class="dot" aria-hidden="true">${icon}</span>${label}</span>`;
+  };
+  const link = (url, text) => (url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(text)}</a>` : esc(text));
+  const msText = (ms) => (ms === null || ms === undefined ? '' : `${fmt.format(ms)} ms`);
+
+  function rows(items) {
+    return `<ul class="rows">${items.map((c) => `
+      <li>
+        <span class="title">${link(c.url, c.name)}</span>
+        <span>${pill(c.status)}${c.ms != null ? ` <span class="muted small">${msText(c.ms)}</span>` : ''}</span>
+        <span class="text">${esc(c.summary)}</span>
+        ${c.detail ? `<span class="detail">${esc(c.detail)}</span>` : ''}
+      </li>`).join('')}</ul>`;
+  }
+
+  function allChecks(d) {
+    const list = [...d.code.checks, ...d.platforms, ...d.mcp.checks];
+    if (d.code.git && d.code.git.sync) list.push(d.code.git.sync);
+    return list;
+  }
+
+  function render(d) {
+    const counts = { ok: 0, warn: 0, fail: 0, skip: 0, info: 0 };
+    allChecks(d).forEach((c) => { counts[c.status] = (counts[c.status] || 0) + 1; });
+    const g = d.code.github || {};
+    const traffic = d.traffic.github || {};
+    const claw = d.traffic.clawhub || {};
+    meta.innerHTML = `${link(`https://github.com/${d.repo}`, d.repo)} · 本地版本 <b>${esc(d.local_version)}</b> · `
+      + `${when(d.generated_at)} 检查，用时 ${(d.took_ms / 1000).toFixed(1)} 秒`;
+
+    const tokenNotes = [];
+    if (!d.tokens.github) tokenNotes.push('没有 GitHub 令牌：访问量拿不到（设置 GITHUB_TOKEN 或 gh auth login）');
+    if (!d.tokens.abs) tokenNotes.push('没有 ABS 令牌：MCP 登录后的测试跳过了（设置 ABS_TOKEN 或 abs.py login）');
+
+    app.innerHTML = `
+      <div class="summary" role="status">
+        ${['ok', 'warn', 'fail', 'skip'].map((s) => `<span class="chip">${pill(s)} <b>${counts[s]}</b></span>`).join('')}
+        ${tokenNotes.map((t) => `<span class="chip">${esc(t)}</span>`).join('')}
+      </div>
+
+      <div class="tiles">
+        ${tile('ClawHub 下载', num(claw.downloads), `安装 ${num(claw.installs)} · 收藏 ${num(claw.stars)}`)}
+        ${tile('GitHub 克隆（14 天）', num(traffic.clones && traffic.clones.count),
+               traffic.clones ? `独立 ${num(traffic.clones.uniques)}` : esc(traffic.error || '—'))}
+        ${tile('GitHub 浏览（14 天）', num(traffic.views && traffic.views.count),
+               traffic.views ? `独立 ${num(traffic.views.uniques)}` : '—')}
+        ${tile('GitHub Star', num(g.stars), `Fork ${num(g.forks)}`)}
+        ${tile('MCP 工具', d.mcp.tools != null ? num(d.mcp.tools) : '—', d.mcp.tools != null ? '登录后实测' : '需要 ABS 令牌')}
+      </div>
+
+      <section>
+        <h2><span class="n">1</span>代码状态</h2>
+        <div class="grid2">
+          <div class="card">
+            <div class="card-head">本地仓库</div>
+            ${gitBlock(d.code.git, g, d.code.github_error)}
+          </div>
+          <div class="card">
+            <div class="card-head">检查</div>
+            ${rows(d.code.checks)}
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head">版本号</div>
+          <div class="table-scroll"><table>
+            <thead><tr><th>文件</th><th class="num">版本</th><th class="hide-sm">说明</th></tr></thead>
+            <tbody>${d.code.versions.map((v) => `
+              <tr><td><code>${esc(v.file)}</code></td><td class="num">${esc(v.version || '—')}</td>
+              <td class="secondary hide-sm">${esc(v.role)}</td></tr>`).join('')}</tbody>
+          </table></div>
+        </div>
+      </section>
+
+      <section>
+        <h2><span class="n">2</span>哪些平台可用 <span class="aside">对照本地版本 ${esc(d.local_version)}</span></h2>
+        <div class="card"><div class="table-scroll"><table class="wide">
+          <thead><tr><th>平台</th><th>状态</th><th class="num">线上版本</th><th>说明</th><th class="hide-sm">安装</th></tr></thead>
+          <tbody>${d.platforms.map((p) => `
+            <tr>
+              <td class="nowrap">${link(p.url, p.name)}</td>
+              <td>${pill(p.status)}</td>
+              <td class="num">${esc(p.version || '—')}</td>
+              <td>${esc(p.summary)}${p.detail ? `<div class="muted small">${esc(p.detail)}</div>` : ''}</td>
+              <td class="hide-sm">${p.install ? `<code>${esc(p.install)}</code>` : ''}</td>
+            </tr>`).join('')}</tbody>
+        </table></div></div>
+      </section>
+
+      <section>
+        <h2><span class="n">3</span>MCP 连通性 <span class="aside"><code>${esc(d.mcp.endpoint)}</code></span></h2>
+        <div class="card">${rows(d.mcp.checks)}</div>
+      </section>
+
+      <section>
+        <h2><span class="n">4</span>下载与访问量</h2>
+        <div class="grid2" id="charts"></div>
+        <div class="card" style="margin-top:12px">
+          <div class="card-head">拿不到的数</div>
+          <ul class="rows">${d.traffic.unavailable.map((u) => `
+            <li><span class="title">${esc(u.name)}</span><span>${pill('skip')}</span>
+            <span class="text">${esc(u.why)}</span></li>`).join('')}</ul>
+        </div>
+        ${referrers(traffic.referrers)}
+        <p class="note">${d.traffic.history.folder
+          ? `每次刷新存一份快照，在 <code>${esc(d.traffic.history.folder)}</code>；GitHub 只给最近 14 天，存下来的日数据最多显示 90 天。`
+          : '这次没有存快照。'}</p>
+      </section>`;
+
+    const charts = document.getElementById('charts');
+    const daily = d.traffic.history.daily || {};
+    const views = (daily.views && daily.views.length) ? daily.views : ((traffic.views || {}).days || []);
+    const clones = (daily.clones && daily.clones.length) ? daily.clones : ((traffic.clones || {}).days || []);
+    charts.append(
+      barChart('GitHub 每日克隆', clones, traffic.error),
+      barChart('GitHub 每日浏览', views, traffic.error),
+    );
+    const snaps = (d.traffic.history.snapshots || []).filter((s) => s.clawhub_downloads != null);
+    charts.append(lineChart('ClawHub 累计下载', snaps.map((s) => ({ t: s.t, v: s.clawhub_downloads }))));
+    const stars = (d.traffic.history.snapshots || []).filter((s) => s.github_stars != null);
+    charts.append(lineChart('GitHub Star', stars.map((s) => ({ t: s.t, v: s.github_stars }))));
+  }
+
+  function tile(label, value, sub) {
+    return `<div class="tile"><div class="label">${esc(label)}</div><div class="value">${value}</div>`
+      + `<div class="sub">${sub}</div></div>`;
+  }
+
+  function gitBlock(git, g, ghError) {
+    if (!git || git.error) return `<div class="empty">${esc((git && git.error) || '读不到本地 git 信息')}</div>`;
+    const dirty = git.dirty
+      ? `${git.dirty} 个文件未提交<div class="muted small">${git.dirty_files.map(esc).join('<br>')}</div>`
+      : '干净';
+    return `<dl class="kv">
+      <dt>分支</dt><dd><code>${esc(git.branch)}</code></dd>
+      <dt>最新提交</dt><dd><code>${esc(git.head)}</code> ${esc(git.subject)}<div class="muted small">${when(git.date)}</div></dd>
+      <dt>工作区</dt><dd>${dirty}</dd>
+      <dt>远端 main</dt><dd><code>${esc(git.remote_main || '—')}</code>${git.sync ? `<div>${pill(git.sync.status)} <span class="secondary">${esc(git.sync.summary)}</span></div>` : ''}</dd>
+      <dt>GitHub</dt><dd>${ghError ? esc(ghError) : `未合并 PR ${num(g.open_prs)} · Issue ${num(g.open_issues)} · 最近推送 ${when(g.pushed_at)}`}</dd>
+    </dl>`;
+  }
+
+  function referrers(list) {
+    if (!list || !list.length) return '';
+    return `<div class="card" style="margin-top:12px"><div class="card-head">GitHub 来源（14 天）</div>
+      <div class="table-scroll"><table><thead><tr><th>来源</th><th class="num">次数</th><th class="num">独立</th></tr></thead>
+      <tbody>${list.map((r) => `<tr><td>${esc(r.referrer)}</td><td class="num">${num(r.count)}</td>
+      <td class="num">${num(r.uniques)}</td></tr>`).join('')}</tbody></table></div></div>`;
+  }
+
+  // ---------------------------------------------------------------- charts (inline SVG, single series)
+
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  const W = 520, H = 200, PAD = { l: 36, r: 8, t: 10, b: 24 };
+
+  function niceMax(v) {
+    if (v <= 4) return 4;
+    const p = Math.pow(10, Math.floor(Math.log10(v)));
+    for (const m of [1, 2, 2.5, 5, 10]) if (m * p >= v) return m * p;
+    return 10 * p;
+  }
+
+  function shell(title, total, rowsForTable) {
+    const card = document.createElement('div');
+    card.className = 'card chart-card';
+    card.innerHTML = `<div class="chart-head"><span class="chart-title">${esc(title)}</span>
+      <span class="chart-total">${total}</span><button type="button" aria-pressed="false">表格</button></div>
+      <div class="chart"></div><div class="tablebox" hidden></div>`;
+    const button = card.querySelector('button');
+    const chart = card.querySelector('.chart');
+    const box = card.querySelector('.tablebox');
+    box.innerHTML = rowsForTable;
+    button.addEventListener('click', () => {
+      const on = box.hidden;
+      box.hidden = !on; chart.hidden = on;
+      button.textContent = on ? '图' : '表格';
+      button.setAttribute('aria-pressed', String(on));
+    });
+    if (!rowsForTable) button.hidden = true;
+    return { card, chart };
+  }
+
+  function axes(svg, max) {
+    const ticks = [0, max / 2, max];
+    ticks.forEach((t) => {
+      const y = PAD.t + (H - PAD.t - PAD.b) * (1 - t / max);
+      svg.append(el('line', { class: 'gridline', x1: PAD.l, x2: W - PAD.r, y1: y, y2: y }));
+      const label = el('text', { class: 'axis-text', x: PAD.l - 6, y: y + 4, 'text-anchor': 'end' });
+      label.textContent = fmt.format(t);
+      svg.append(label);
+    });
+  }
+
+  function el(name, attrs) {
+    const node = document.createElementNS(SVGNS, name);
+    Object.entries(attrs).forEach(([k, v]) => node.setAttribute(k, v));
+    return node;
+  }
+
+  function tooltip(chart) {
+    const tip = document.createElement('div');
+    tip.className = 'tip';
+    chart.append(tip);
+    return {
+      show(svg, x, y, html) {
+        const r = svg.getBoundingClientRect();
+        const s = r.width / W;
+        tip.innerHTML = html;
+        tip.style.display = 'block';
+        tip.style.left = `${Math.min(Math.max(x * s, 60), r.width - 60)}px`;
+        tip.style.top = `${y * s}px`;
+      },
+      hide() { tip.style.display = 'none'; },
+    };
+  }
+
+  function barChart(title, data, error) {
+    const total = data.reduce((a, b) => a + b.count, 0);
+    const table = data.length ? `<div class="table-scroll"><table><thead><tr><th>日期</th><th class="num">次数</th>
+      <th class="num">独立</th></tr></thead><tbody>${data.slice().reverse().map((r) => `<tr><td>${esc(r.date)}</td>
+      <td class="num">${num(r.count)}</td><td class="num">${num(r.uniques)}</td></tr>`).join('')}</tbody></table></div>` : '';
+    const { card, chart } = shell(title, data.length ? `${data.length} 天共 ${fmt.format(total)} 次` : '', table);
+    if (!data.length) {
+      chart.innerHTML = `<div class="empty">${esc(error || '还没有数据')}</div>`;
+      return card;
+    }
+    const max = niceMax(Math.max(...data.map((r) => r.count), 1));
+    const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': `${title}，${data.length} 天共 ${total} 次` });
+    axes(svg, max);
+    const plotW = W - PAD.l - PAD.r, plotH = H - PAD.t - PAD.b;
+    const slot = plotW / data.length;
+    const bw = Math.max(Math.min(slot - 2, 28), 2);
+    const tip = tooltip(chart);
+    const step = Math.ceil(data.length / 7);
+    data.forEach((r, i) => {
+      const x = PAD.l + i * slot + (slot - bw) / 2;
+      const h = (r.count / max) * plotH;
+      const y0 = PAD.t + plotH;
+      if (h > 0) {
+        const rad = Math.min(4, bw / 2, h);
+        const d = `M${x},${y0} V${y0 - h + rad} Q${x},${y0 - h} ${x + rad},${y0 - h} H${x + bw - rad}`
+          + ` Q${x + bw},${y0 - h} ${x + bw},${y0 - h + rad} V${y0} Z`;
+        svg.append(el('path', { class: 'bar', d }));
+      }
+      const lastLabel = i === data.length - 1;
+      if (lastLabel || (i % step === 0 && data.length - 1 - i >= step / 2 + 1)) {
+        const t = el('text', { class: 'axis-text', x: x + bw / 2, y: H - 6, 'text-anchor': 'middle' });
+        t.textContent = r.date.slice(5);
+        svg.append(t);
+      }
+      const hit = el('rect', { class: 'hit', x: PAD.l + i * slot, y: PAD.t, width: slot, height: plotH });
+      hit.addEventListener('mouseenter', () => {
+        svg.querySelectorAll('.bar').forEach((b) => b.classList.add('dim'));
+        tip.show(svg, x + bw / 2, y0 - h, `${esc(r.date)}<br><b>${num(r.count)}</b> 次 · 独立 ${num(r.uniques)}`);
+      });
+      hit.addEventListener('mouseleave', () => {
+        svg.querySelectorAll('.bar').forEach((b) => b.classList.remove('dim'));
+        tip.hide();
+      });
+      svg.append(hit);
+    });
+    chart.prepend(svg);
+    return card;
+  }
+
+  function lineChart(title, points) {
+    const last = points.length ? points[points.length - 1].v : null;
+    const table = points.length ? `<div class="table-scroll"><table><thead><tr><th>时间</th><th class="num">数值</th></tr></thead>
+      <tbody>${points.slice().reverse().map((p) => `<tr><td>${when(p.t)}</td><td class="num">${num(p.v)}</td></tr>`).join('')}
+      </tbody></table></div>` : '';
+    const { card, chart } = shell(title, last != null ? `现在 ${fmt.format(last)}` : '', table);
+    if (points.length < 2) {
+      chart.innerHTML = '<div class="empty">快照还不够画趋势：隔些时候再刷新几次就有了。</div>';
+      return card;
+    }
+    const times = points.map((p) => new Date(p.t).getTime());
+    const t0 = Math.min(...times), t1 = Math.max(...times);
+    const vmin = Math.min(...points.map((p) => p.v)), vmax = Math.max(...points.map((p) => p.v));
+    const max = niceMax(vmax);
+    const plotW = W - PAD.l - PAD.r, plotH = H - PAD.t - PAD.b;
+    const X = (t) => PAD.l + (t1 === t0 ? plotW / 2 : ((t - t0) / (t1 - t0)) * plotW);
+    const Y = (v) => PAD.t + plotH * (1 - v / max);
+    const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img',
+      'aria-label': `${title}，从 ${vmin} 到 ${last}` });
+    axes(svg, max);
+    svg.append(el('path', { class: 'line', d: points.map((p, i) => `${i ? 'L' : 'M'}${X(times[i])},${Y(p.v)}`).join(' ') }));
+    [[0, 'start'], [points.length - 1, 'end']].forEach(([i, anchor]) => {
+      const t = el('text', { class: 'axis-text', x: X(times[i]), y: H - 6, 'text-anchor': anchor });
+      const sameDay = t1 - t0 < 36e5 * 24;
+      t.textContent = new Date(times[i]).toLocaleString('zh-CN', sameDay
+        ? { hour: '2-digit', minute: '2-digit', hour12: false } : { month: 'numeric', day: 'numeric' });
+      svg.append(t);
+    });
+    const marker = el('circle', { class: 'pt', r: 4, cx: X(times[times.length - 1]), cy: Y(last) });
+    svg.append(marker);
+    const tip = tooltip(chart);
+    const hit = el('rect', { class: 'hit', x: PAD.l, y: PAD.t, width: plotW, height: plotH });
+    hit.addEventListener('mousemove', (e) => {
+      const r = svg.getBoundingClientRect();
+      const mx = ((e.clientX - r.left) / r.width) * W;
+      let best = 0;
+      times.forEach((t, i) => { if (Math.abs(X(t) - mx) < Math.abs(X(times[best]) - mx)) best = i; });
+      marker.setAttribute('cx', X(times[best])); marker.setAttribute('cy', Y(points[best].v));
+      tip.show(svg, X(times[best]), Y(points[best].v), `${when(points[best].t)}<br><b>${num(points[best].v)}</b>`);
+    });
+    hit.addEventListener('mouseleave', () => {
+      marker.setAttribute('cx', X(times[times.length - 1])); marker.setAttribute('cy', Y(last));
+      tip.hide();
+    });
+    svg.append(hit);
+    chart.prepend(svg);
+    return card;
+  }
+
+  // ---------------------------------------------------------------- load
+
+  async function load() {
+    btn.disabled = true;
+    btn.textContent = '检查中…';
+    try {
+      const res = await fetch('/api/status', { cache: 'no-store' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      render(await res.json());
+    } catch (e) {
+      app.innerHTML = `<div class="error">取数据失败：${esc(e.message)}。确认 <code>abs_dashboard.py</code> 还在运行。</div>`;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '刷新';
+    }
+  }
+
+  if (window.__ABS_STATUS__) {
+    render(window.__ABS_STATUS__);
+    btn.textContent = '静态快照';
+    btn.disabled = true;
+    btn.title = '这是 --html 写出的快照；要刷新请运行 abs_dashboard.py';
+  } else {
+    btn.addEventListener('click', load);
+    load();
+  }
+})();
+</script>
+</body>
+</html>
