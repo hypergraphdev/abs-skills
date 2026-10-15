@@ -96,7 +96,8 @@ python3 scripts/abs.py diagnose "Why do we keep missing daily output?" --file li
 ```
 
 Language follows the text you pass (Chinese in → Chinese out; English in → English out). Override with
-`--lang zh|en`, e.g. when the user writes in English about a Chinese document.
+`--lang zh|en`, e.g. when the user writes in English about a Chinese document. `card`, `courses`, `course` and
+`plan-list` take no text to go by and default to English: pass `--lang zh` when the user writes Chinese.
 
 ## How to answer
 

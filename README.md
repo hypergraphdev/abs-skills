@@ -34,8 +34,8 @@ ABS Skill 让 Claude Code、Codex、WorkBuddy、OpenClaw 等 AI Agent 直接调�
 
 ### 第一次使用
 
-需要一个 ABS 账号和访问令牌：登录 <https://www.ucai.net>，在「个人设置 → 访问令牌」里生成一个，交给你的 Agent。
-没有账号可以在 <https://www.ucai.net/trial> 申请试用。
+检索不用账号，装好就能用。看整张工具卡、带出处问答、学课程、规划和诊断需要 ABS 账号和访问令牌：登录 <https://www.ucai.net>，
+在「个人设置 → 访问令牌」里生成一个，交给你的 Agent。没有账号可以在 <https://www.ucai.net/trial> 申请试用。
 
 ### 它运行什么、发送什么、保存什么
 
@@ -93,7 +93,8 @@ same 11 tools:
 
 ### First use
 
-You need an ABS account and an access token: sign in at <https://www.ucai.net>, create one under
+Search works right after install, with no account. Whole tool cards, cited answers, courses, plans and diagnoses
+need an ABS account and an access token: sign in at <https://www.ucai.net>, create one under
 Personal Settings → Access tokens, and give it to your agent. No account yet? Request a trial at
 <https://www.ucai.net/trial>.
 
